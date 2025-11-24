@@ -96,3 +96,16 @@ insert into public.mdm_division values(10,'Economic Offenses Division','Y',curre
 insert into public.mdm_division values(11,'Financial Intelligence Unit','Y',current_date,3);
 insert into public.mdm_division values(12,'Anti Human Trafficking Unit','Y',current_date,3);
 
+
+
+insert into public.mdm_generallookup values(35,'Pending Trial',11,1,'Y',current_date)
+insert into public.mdm_generallookup values(36,'Convicted',11,2,'Y',current_date)
+insert into public.mdm_generallookup values(37,'Acquitted',11,3,'Y',current_date)
+insert into public.mdm_generallookup values(38,'Squashed',11,4,'Y',current_date)
+insert into public.mdm_generallookup values(39,'LPR',11,5,'Y',current_date)
+
+
+
+delete from public.users_user where "id"=64
+
+delete from users_user_designation where user_id=64
