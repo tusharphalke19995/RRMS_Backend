@@ -93,7 +93,9 @@ class FolderTreeAPIView(APIView):
                 {
                     "file_id": f.fileId,
                     "name": f.fileName,
+                    "fileHash":f.fileHash,
                     "path":  request.build_absolute_uri(f.filePath) if f.filePath else None,
+                    # "path":f.filePath,
                     "created_at": f.created_at,
                     "uploaded_by": f.uploaded_by.first_name + ' ' + f.uploaded_by.last_name if f.uploaded_by else None
                 }
@@ -113,7 +115,9 @@ class FolderTreeAPIView(APIView):
                 {
                     "file_id": f.fileId,
                     "name": f.fileName,
+                    "fileHash":f.fileHash,
                     "path":  request.build_absolute_uri(f.filePath) if f.filePath else None,
+                    # "path":f.filePath,
                     "created_at": f.created_at,
                     "uploaded_by": f.uploaded_by.first_name + ' ' + f.uploaded_by.last_name if f.uploaded_by else None
                 }
@@ -136,7 +140,9 @@ class FolderTreeAPIView(APIView):
                 {
                     "file_id": f.fileId,
                     "name": f.fileName,
+                    "fileHash":f.fileHash,
                     "path":  request.build_absolute_uri(f.filePath) if f.filePath else None,
+                    # "path":f.filePath,
                     "created_at": f.created_at,
                     "uploaded_by": f.uploaded_by.first_name + ' ' + f.uploaded_by.last_name if f.uploaded_by else None
                 }
@@ -161,7 +167,9 @@ class FolderTreeAPIView(APIView):
                 {
                     "file_id": f.fileId,
                     "name": f.fileName,
+                    "fileHash":f.fileHash,
                     "path":  request.build_absolute_uri(f.filePath) if f.filePath else None,
+                    # "path":  f.filePath,
                     "created_at": f.created_at,
                     "uploaded_by": f.uploaded_by.first_name + ' ' + f.uploaded_by.last_name if f.uploaded_by else None
                 }
@@ -186,7 +194,9 @@ class FolderTreeAPIView(APIView):
                 {
                     "file_id": f.fileId,
                     "name": f.fileName,
+                    "fileHash":f.fileHash,
                     "path":  request.build_absolute_uri(f.filePath) if f.filePath else None,
+                    # "path":f.filePath,
                     "created_at": f.created_at,
                     "uploaded_by": f.uploaded_by.first_name + ' ' + f.uploaded_by.last_name if f.uploaded_by else None
                 }
@@ -198,7 +208,9 @@ class FolderTreeAPIView(APIView):
                 {
                     "name": f.fileName,
                     "file_id": f.fileId,
+                    "fileHash":f.fileHash,
                     "path": request.build_absolute_uri(f.filePath) if f.filePath else None,
+                    # "path":f.filePath,
                     "created_at": f.created_at,
                     "uploaded_by": f.uploaded_by.first_name+' '+f.uploaded_by.last_name if f.uploaded_by else None
                 }
@@ -554,6 +566,7 @@ class ArchiveFullTreeAPIView(APIView):
             node.setdefault("files", []).append({
                 "file_id": f.fileId,
                 "name": f.fileName,
+                "fileHash":f.fileHash,
                 "path": request.build_absolute_uri(f.filePath) if f.filePath else None,
                 "created_at": f.created_at,
                 "uploaded_by": f.uploaded_by.first_name if f.uploaded_by else None
@@ -757,6 +770,7 @@ class FolderTreeFullAPIView(APIView):
             node.setdefault("files", []).append({
                 "file_id": f.fileId,
                 "name": f.fileName,
+                "fileHash":f.fileHash,
                 "path": request.build_absolute_uri(f.filePath) if f.filePath else None,
                 "created_at": f.created_at,
                 "uploaded_by": f"{f.uploaded_by.first_name} {f.uploaded_by.last_name}" if f.uploaded_by else None

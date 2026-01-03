@@ -34,6 +34,8 @@ DEBUG = True
 
 ALLOWED_HOSTSsettings = ALLOWED_HOSTS = [os.getenv("RENDER_EXTERNAL_HOSTNAME", "localhost")]
 
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'uploads')
 
 # Application definition
 
@@ -97,15 +99,40 @@ WSGI_APPLICATION = 'RRMSAPI.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
 
+# 'default': {
+    #    'ENGINE': 'django.db.backends.postgresql',
+    #     'NAME': config('DB_NAME'),
+    #     'USER': config('DB_USER'),
+    #     'PASSWORD': config('DB_PASSWORD'),
+    #     'HOST': config('DB_HOST'),
+    #     'PORT': config('DB_PORT'),
+    # }
+      # 'USER': 'your_user',
+        # 'PASSWORD': 'your_password',
+        # 'PORT': '1433',
+        # 'default': {
+        # 'ENGINE': 'mssql',
+        # 'NAME': 'RRMS',
+        # 'HOST': 'BUDHA\\MSSQLSERVER03',
+        # 'OPTIONS': {
+        #     'driver': 'ODBC Driver 17 for SQL Server',
+        #     'trusted_connection': 'yes',
+        #     'extra_params': 'Encrypt=yes;TrustServerCertificate=yes;'
+
+        # },
+        
 DATABASES = {
-    'default': {
-       'ENGINE': 'django.db.backends.postgresql',
-        'NAME': config('DB_NAME'),
-        'USER': config('DB_USER'),
-        'PASSWORD': config('DB_PASSWORD'),
-        'HOST': config('DB_HOST'),
-        'PORT': config('DB_PORT'),
-    }
+          'default': {
+        'ENGINE': 'mssql',
+        'NAME': 'RRMSDb',
+        'HOST': 'BUDHA\\MSSQLSERVER03',
+        'OPTIONS': {
+            'driver': 'ODBC Driver 17 for SQL Server',
+            'trusted_connection': 'yes',
+            'extra_params': 'Encrypt=yes;TrustServerCertificate=yes;'
+
+        },
+          }
 }
 
 

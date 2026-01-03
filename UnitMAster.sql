@@ -1852,6 +1852,27 @@ INSERT Into TmpUnitMaster (UnitID, UnitName, LocalName, TypeID, ParentUnit, Actu
 (9011, N'Text ACP Office', N'Text ACP Office', 30, 9002, 50, 50, 0, N'K G Halli Sub Division', N'', 500000, 0, N'unitpcwit@gmail.com', 0, 80, 16, 443, N'Y', CAST(N'2024-01-05T18:15:21.293' AS TIMESTAMPTZ), 0, N'InitialLoad', NULL, CAST(N'2024-01-25T11:47:28.0079352' AS TIMESTAMPTZ), CAST(N'9999-12-31T23:59:59.9999999' AS TIMESTAMPTZ));
 
 INSERT INTO mdm_UnitMaster
-SELECT UnitID, UnitName,TypeID, ParentUnit, ActualStrength, SanctionedStrength, TalukID, Address1, Address2, Active, LastModifiedDate
+SELECT UnitID, UnitName,TypeID, ParentUnit, ActualStrength, 
+SanctionedStrength, TalukID, Address1, Address2, Active, 
+LastModifiedDate
 ,DistrictID,StateId
 FROM TmpUnitMaster where typeid in (1,12) order by unitname
+
+
+INSERT INTO mdm_UnitMaster values(9991, N'NHRC', 1, 2, 50, 50, 0, N'', N'', N'Y',current_timestamp,443,16);
+
+INSERT INTO mdm_UnitMaster values(9992, N'SHRC', 1, 2, 50, 50, 0, N'', N'', N'Y',current_timestamp,443,16);
+
+
+INSERT INTO mdm_UnitMaster values(9993, N'High Court', 1, 2, 50, 50, 0, N'', N'', N'Y',current_timestamp,443,16);
+
+
+INSERT INTO mdm_UnitMaster values(9994, N'DG / IGP', 1, 2, 50, 50, 0, N'', N'', N'Y',current_timestamp,443,16);
+
+
+INSERT INTO mdm_UnitMaster values(9995, N'Lokayukta', 1, 2, 50, 50, 0, N'', N'', N'Y',current_timestamp,443,16);
+
+
+INSERT INTO mdm_UnitMaster values(9991, N'NHRC', 1, 2, 50, 50, 0, N'', N'', N'Y',current_timestamp,443,16);
+
+

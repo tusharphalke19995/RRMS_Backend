@@ -129,14 +129,14 @@ class PasswordResetOTP(models.Model):
     
 class PasswordResetRequest(models.Model):
     passwordResetRequestId = models.AutoField(primary_key=True)
-    kgid = models.CharField()
+    kgid = models.CharField(max_length=10)
     first_name=models.CharField(max_length=100)
     last_name=models.CharField(max_length=100)
     email = models.EmailField()
     mobileno=models.CharField(max_length=10)
     requested_at = models.DateTimeField(auto_now_add=True)
     requested_by = models.ForeignKey(User, null=True, blank=True, on_delete=models.SET_NULL)
-    status= models.CharField(null=True,blank=True,default='C')
+    status= models.CharField(null=True,blank=True,default='C',max_length=1)
 
     def __str__(self):
         return f"{self.kgid} - {self.email}-{self.mobileno}"

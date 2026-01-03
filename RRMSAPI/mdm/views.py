@@ -314,7 +314,7 @@ class LookupByCategoryView(ListAPIView):
     serializer_class = LookupCustomSerializer
 
     def get_queryset(self):
-        return GeneralLookUp.objects.filter(active='Y').order_by('CategoryId','lookupOrder')
+        return GeneralLookUp.objects.filter(active=1).order_by('CategoryId','lookupOrder')
 
     def list(self, request, *args, **kwargs):
         queryset = self.get_queryset()

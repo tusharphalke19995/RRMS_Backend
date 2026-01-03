@@ -103,6 +103,8 @@ insert into public.mdm_generallookup values(36,'Convicted',11,2,'Y',current_date
 insert into public.mdm_generallookup values(37,'Acquitted',11,3,'Y',current_date)
 insert into public.mdm_generallookup values(38,'Squashed',11,4,'Y',current_date)
 insert into public.mdm_generallookup values(39,'LPR',11,5,'Y',current_date)
+insert into public.mdm_generallookup values(40,'Disposed',11,6,'Y',current_date)
+insert into public.mdm_generallookup values(41,'Discharged',11,7,'Y',current_date)
 
 
 

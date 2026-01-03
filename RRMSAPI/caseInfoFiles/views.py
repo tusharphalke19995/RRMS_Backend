@@ -83,181 +83,379 @@ class FavouriteFilesView(APIView):
             return Response({'error': 'This file is not favourited'}, status=status.HTTP_404_NOT_FOUND)
   
 
-class SearchCaseFilesView(APIView):
-    permission_classes = [HasCustomPermission]
-    required_permission = 'view_caseinfodetails'
+# class SearchCaseFilesView(APIView):
+#     permission_classes = [HasCustomPermission]
+#     required_permission = 'view_caseinfodetails'
 
-    def post(self, request):
-        searchParams = request.data
-        query = Q()
-        filters_applied = False
+#     def post(self, request):
+#         searchParams = request.data
+#         query = Q()
+#         filters_applied = False
 
-        if "division_id" in searchParams:
-            query &= Q(division__divisionId__icontains= searchParams['division_id'])
-            filters_applied = True
+#         if "division_id" in searchParams:
+#             query &= Q(division__divisionId__icontains= searchParams['division_id'])
+#             filters_applied = True
 
-        if "stateId" in searchParams and searchParams["stateId"] not in [None, ""]:
-            query &= Q(stateId__icontains= searchParams['stateId'])
-            filters_applied = True
+#         if "stateId" in searchParams and searchParams["stateId"] not in [None, ""]:
+#             query &= Q(stateId__icontains= searchParams['stateId'])
+#             filters_applied = True
 
-        if "districtId" in searchParams and searchParams["districtId"] not in [None, ""]:
-            query &= Q(districtId__icontains= searchParams['districtId'])
-            filters_applied = True
+#         if "districtId" in searchParams and searchParams["districtId"] not in [None, ""]:
+#             query &= Q(districtId__icontains= searchParams['districtId'])
+#             filters_applied = True
         
-        if "unitId" in searchParams and searchParams["unitId"] not in [None, ""]:
-            query &= Q(unitId__icontains= searchParams['unitId'])
-            filters_applied = True
+#         if "unitId" in searchParams and searchParams["unitId"] not in [None, ""]:
+#             query &= Q(unitId__icontains= searchParams['unitId'])
+#             filters_applied = True
 
-        if "office" in searchParams and searchParams["office"] not in [None, ""]:
-            query &= Q(Office__icontains= searchParams['office'])
-            filters_applied = True
+#         if "office" in searchParams and searchParams["office"] not in [None, ""]:
+#             query &= Q(Office__icontains= searchParams['office'])
+#             filters_applied = True
 
-        if "letterNo" in searchParams and searchParams["letterNo"] not in [None, ""]:
-            query &= Q(letterNo__icontains= searchParams['letterNo'])
-            filters_applied = True
+#         if "letterNo" in searchParams and searchParams["letterNo"] not in [None, ""]:
+#             query &= Q(letterNo__icontains= searchParams['letterNo'])
+#             filters_applied = True
 
-        if "caseNo" in searchParams and searchParams["caseNo"] not in [None, ""]:
-            query &= Q(caseNo__icontains= searchParams['caseNo'])
-            filters_applied = True
+#         if "caseNo" in searchParams and searchParams["caseNo"] not in [None, ""]:
+#             query &= Q(caseNo__icontains= searchParams['caseNo'])
+#             filters_applied = True
 
-        if "firNo" in searchParams and searchParams["firNo"] not in [None, ""]:
-            query &= Q(firNo__icontains= searchParams['firNo'])
-            filters_applied = True
+#         if "firNo" in searchParams and searchParams["firNo"] not in [None, ""]:
+#             query &= Q(firNo__icontains= searchParams['firNo'])
+#             filters_applied = True
 
-        if "caseDate" in searchParams and searchParams["caseDate"] not in [None, ""]:
-            case_date = datetime.fromisoformat(searchParams['caseDate'].replace('Z', '')).date()
-            # file_extra_filter &= Q(caseDate=case_date)
-            query &= Q(caseDate= case_date)
-            filters_applied = True
+#         if "caseDate" in searchParams and searchParams["caseDate"] not in [None, ""]:
+#             case_date = datetime.fromisoformat(searchParams['caseDate'].replace('Z', '')).date()
+#             # file_extra_filter &= Q(caseDate=case_date)
+#             query &= Q(caseDate= case_date)
+#             filters_applied = True
         
-        if "caseType" in searchParams and searchParams["caseType"] not in [None, ""]:
-            query &= Q(caseType__icontains= searchParams['caseType'])
-            filters_applied = True
+#         if "caseType" in searchParams and searchParams["caseType"] not in [None, ""]:
+#             query &= Q(caseType__icontains= searchParams['caseType'])
+#             filters_applied = True
 
-        if "caseStatus" in searchParams and searchParams["caseStatus"] not in [None, ""]:
-            status_value = GeneralLookUp.objects.get(lookupId=searchParams["caseStatus"]).lookupValue
-            query &= Q(caseStatus=status_value)
-            filters_applied = True
-            # query &= Q(caseStatus__icontains= searchParams['caseStatus'].strip())
-            # filters_applied = True
-        if "finalReportCaseStatus" in searchParams and searchParams["finalReportCaseStatus"] not in [None, ""]:
-            final_status_value = GeneralLookUp.objects.get(lookupId=searchParams["finalReportCaseStatus"]).lookupValue
-            query &= Q(caseStatus=final_status_value)
-            filters_applied = True
+#         if "caseStatus" in searchParams and searchParams["caseStatus"] not in [None, ""]:
+#             status_value = GeneralLookUp.objects.get(lookupId=searchParams["caseStatus"]).lookupValue
+#             query &= Q(caseStatus=status_value)
+#             filters_applied = True
+#             # query &= Q(caseStatus__icontains= searchParams['caseStatus'].strip())
+#             # filters_applied = True
+#         if "finalReportCaseStatus" in searchParams and searchParams["finalReportCaseStatus"] not in [None, ""]:
+#             final_status_value = GeneralLookUp.objects.get(lookupId=searchParams["finalReportCaseStatus"]).lookupValue
+#             query &= Q(caseStatus=final_status_value)
+#             filters_applied = True
 
-        if "author" in searchParams and searchParams["author"] not in [None, ""]:
-            query &= Q(author__icontains= searchParams['author'])
-            filters_applied = True
+#         if "author" in searchParams and searchParams["author"] not in [None, ""]:
+#             query &= Q(author__icontains= searchParams['author'])
+#             filters_applied = True
 
-        if "toAddr" in searchParams and searchParams["toAddr"] not in [None, ""]:
-            query &= Q(toAddr__icontains= searchParams['toAddr'])
-            filters_applied = True
+#         if "toAddr" in searchParams and searchParams["toAddr"] not in [None, ""]:
+#             query &= Q(toAddr__icontains= searchParams['toAddr'])
+#             filters_applied = True
         
-        if "fromYear" in searchParams and searchParams["fromYear"] not in [None, ""]:
-            query &= Q(year__gte= searchParams['fromYear'])
-            filters_applied = True
+#         if "fromYear" in searchParams and searchParams["fromYear"] not in [None, ""]:
+#             query &= Q(year__gte= searchParams['fromYear'])
+#             filters_applied = True
 
-        if "toYear" in searchParams and searchParams["toYear"] not in [None, ""]:
-            query &= Q(year__lte= searchParams['toYear'])
-            filters_applied = True
+#         if "toYear" in searchParams and searchParams["toYear"] not in [None, ""]:
+#             query &= Q(year__lte= searchParams['toYear'])
+#             filters_applied = True
 
-        query &= Q(is_draft__icontains = False)
+#         query &= Q(is_draft__icontains = False)
         
        
 
+#         user = request.user
+
+
+#         request_raised_subquery = FileAccessRequest.objects.filter(
+#                     file=OuterRef('pk'),
+#                     requested_by=user
+#                     )
+#         access_request_subquery = FileAccessRequest.objects.filter(
+#                     file=OuterRef('pk'),
+#                     requested_by=user,
+#                     is_approved=True 
+#                     )
+#         favourite_subquery = FavouriteFiles.objects.filter(user=request.user,file=OuterRef('pk'))
+        
+#         print('user.role.roleId',user.role.roleId)
+#         if user.is_staff or user.role.roleId in [3]:
+#             file_filter = Q()  # content manager sees all
+#         else:
+           
+#             file_filter = Q(is_approved=True) | Q(uploaded_by=user) | Exists(access_request_subquery)
+
+#         file_extra_filter = Q()
+
+#         hashtag_filter = Q()
+        
+#         if 'hashTag' in searchParams and searchParams["hashTag"]:
+#             input_hashtag = searchParams["hashTag"].strip()
+#             # if not input_hashtag.startswith("#"):
+#             #     input_hashtag = "#" + input_hashtag
+
+#             regex_pattern = rf'(^|\s){re.escape(input_hashtag)}(\s|$)'
+#             hashtag_filter = Q(hashTag__regex=regex_pattern) & ~Q(hashTag__isnull=True) & ~Q(hashTag__exact="")
+#             filters_applied = True
+
+#         if 'subject' in searchParams and searchParams["subject"] not in [None, ""]:
+#             file_extra_filter &= Q(subject__icontains= searchParams['subject'])
+#             filters_applied = True
+
+#         if 'classification' in searchParams and searchParams["classification"] not in [None, ""]:
+#             file_extra_filter &= Q(classification__lookupId__icontains= searchParams['classification'])
+#             filters_applied = True
+
+
+#         print("file Type Id:",searchParams["fileType"])
+#         if 'fileType' in searchParams and searchParams["fileType"] not in [None, ""]:
+#             file_extra_filter &= Q(fileType__lookupId= searchParams['fileType'])
+#             filters_applied = True
+
+#         if 'docType' in searchParams and searchParams["docType"] not in [None, ""]:
+#             file_extra_filter &= Q(documentType__lookupId= searchParams['docType'])
+#             filters_applied = True
+
+#         if 'fileExt' in searchParams and searchParams["fileExt"]:
+#             file_ext = searchParams['fileExt'].lower()
+#             print('file_ext',file_ext)
+#             extensions = []
+
+#             if file_ext.lower() == 'image':
+#                 extensions = ['.jpg', '.jpeg', '.png']
+#             elif file_ext.lower() == 'document':
+#                 extensions = ['.pdf', '.docx', '.xlsx']
+#             elif file_ext.lower() == 'audio':
+#                 extensions = ['.mp3', '.wav', '.flac']
+#             elif file_ext.lower() == 'video':
+#                 extensions = ['.mp4', '.mov','.webm']
+#             print(extensions)
+#             if extensions:
+#                 ext_query = Q()
+#                 for ext in extensions:
+#                     ext_query |= Q(lower_file_name__endswith=ext)
+                
+#                 file_extra_filter &= ext_query
+#                 filters_applied = True
+#         print('file_extra_filter:',file_extra_filter)
+#         print('filters_applied:',filters_applied)
+#         file_queryset = FileDetails.objects.annotate(lower_file_name=Lower('fileName')).filter(
+#             file_filter & file_extra_filter & hashtag_filter).annotate(
+#             is_favourited=Exists(favourite_subquery),
+#             is_request_raised = Exists(request_raised_subquery),
+#             is_access_request_approved=Exists(access_request_subquery)
+#             )
+        
+#         if filters_applied:
+#             case_details_qs = CaseInfoDetails.objects.filter(query,files__in=file_queryset).distinct()
+#         else:
+#             case_details_qs = CaseInfoDetails.objects.filter(files__in=file_queryset).distinct()
+        
+#         caseDetails = case_details_qs.prefetch_related(
+#             Prefetch('files', queryset=file_queryset)
+#         ).order_by('-lastmodified_Date')[:20]
+
+#         caseSerializer = CaseInfoSearchSerializers(caseDetails, many = True)
+#         return Response({"responseData":{"response":caseSerializer.data,"status":status.HTTP_200_OK}})
+
+class SearchCaseFilesView(APIView):
+    def post(self, request):
+        searchParams = request.data
+        case_query = Q()
+        file_query = Q()
+        filters_applied = False
+
+        # ---------------------------
+        # CASE-LEVEL FILTERS
+        # ---------------------------
+
+        if searchParams.get("division_id"):
+            case_query &= Q(division__divisionId=searchParams["division_id"])
+            filters_applied = True
+
+        if searchParams.get("stateId"):
+            case_query &= Q(stateId=searchParams["stateId"])
+            filters_applied = True
+
+        if searchParams.get("districtId"):
+            case_query &= Q(districtId=searchParams["districtId"])
+            filters_applied = True
+
+        if searchParams.get("unitId"):
+            case_query &= Q(unitId=searchParams["unitId"])
+            filters_applied = True
+
+        if searchParams.get("office"):
+            case_query &= Q(Office__icontains=searchParams["office"])
+            filters_applied = True
+
+        if searchParams.get("letterNo"):
+            case_query &= Q(letterNo__icontains=searchParams["letterNo"])
+            filters_applied = True
+
+        if searchParams.get("caseNo"):
+            case_query &= Q(caseNo__icontains=searchParams["caseNo"])
+            filters_applied = True
+
+        if searchParams.get("firNo"):
+            case_query &= Q(firNo__icontains=searchParams["firNo"])
+            filters_applied = True
+
+        if searchParams.get("caseDate"):
+            case_date = datetime.fromisoformat(
+                searchParams["caseDate"].replace("Z", "")
+            ).date()
+            case_query &= Q(caseDate=case_date)
+            filters_applied = True
+
+        if searchParams.get("caseType"):
+            case_query &= Q(caseType__icontains=searchParams["caseType"])
+            filters_applied = True
+
+        if searchParams.get("caseStatus"):
+            status_value = GeneralLookUp.objects.get(
+                lookupId=searchParams["caseStatus"]
+            ).lookupValue
+            case_query &= Q(caseStatus=status_value)
+            filters_applied = True
+
+        if searchParams.get("author"):
+            case_query &= Q(author__icontains=searchParams["author"])
+            filters_applied = True
+
+        if searchParams.get("toAddr"):
+            case_query &= Q(toAddr__icontains=searchParams["toAddr"])
+            filters_applied = True
+
+        if searchParams.get("fromYear"):
+            case_query &= Q(year__gte=searchParams["fromYear"])
+            filters_applied = True
+
+        if searchParams.get("toYear"):
+            case_query &= Q(year__lte=searchParams["toYear"])
+            filters_applied = True
+
+        # Boolean filter (SQL Server safe)
+        case_query &= Q(is_draft=False)
+
+        # ---------------------------
+        # FILE ACCESS CONTROL
+        # ---------------------------
+
         user = request.user
 
+        request_raised = FileAccessRequest.objects.filter(
+            file=OuterRef("pk"),
+            requested_by=user
+        )
 
-        request_raised_subquery = FileAccessRequest.objects.filter(
-                    file=OuterRef('pk'),
-                    requested_by=user
-                    )
-        access_request_subquery = FileAccessRequest.objects.filter(
-                    file=OuterRef('pk'),
-                    requested_by=user,
-                    is_approved=True 
-                    )
-        favourite_subquery = FavouriteFiles.objects.filter(user=request.user,file=OuterRef('pk'))
-        
-        print('user.role.roleId',user.role.roleId)
-        if user.is_staff or user.role.roleId in [3]:
-            file_filter = Q()  # content manager sees all
+        approved_request = FileAccessRequest.objects.filter(
+            file=OuterRef("pk"),
+            requested_by=user,
+            is_approved=True
+        )
+
+        favourite_subquery = FavouriteFiles.objects.filter(
+            user=user,
+            file=OuterRef("pk")
+        )
+
+        if user.is_staff or user.role.roleId == 3:
+            access_filter = Q()
         else:
-           
-            file_filter = Q(is_approved=True) | Q(uploaded_by=user) | Exists(access_request_subquery)
-
-        file_extra_filter = Q()
-
-        hashtag_filter = Q()
-        
-        if 'hashTag' in searchParams and searchParams["hashTag"]:
-            input_hashtag = searchParams["hashTag"].strip()
-            # if not input_hashtag.startswith("#"):
-            #     input_hashtag = "#" + input_hashtag
-
-            regex_pattern = rf'(^|\s){re.escape(input_hashtag)}(\s|$)'
-            hashtag_filter = Q(hashTag__regex=regex_pattern) & ~Q(hashTag__isnull=True) & ~Q(hashTag__exact="")
-            filters_applied = True
-
-        if 'subject' in searchParams and searchParams["subject"] not in [None, ""]:
-            file_extra_filter &= Q(subject__icontains= searchParams['subject'])
-            filters_applied = True
-
-        if 'classification' in searchParams and searchParams["classification"] not in [None, ""]:
-            file_extra_filter &= Q(classification__lookupId__icontains= searchParams['classification'])
-            filters_applied = True
-
-
-        print("file Type Id:",searchParams["fileType"])
-        if 'fileType' in searchParams and searchParams["fileType"] not in [None, ""]:
-            file_extra_filter &= Q(fileType__lookupId= searchParams['fileType'])
-            filters_applied = True
-
-        if 'docType' in searchParams and searchParams["docType"] not in [None, ""]:
-            file_extra_filter &= Q(documentType__lookupId= searchParams['docType'])
-            filters_applied = True
-
-        if 'fileExt' in searchParams and searchParams["fileExt"]:
-            file_ext = searchParams['fileExt'].lower()
-            print('file_ext',file_ext)
-            extensions = []
-
-            if file_ext.lower() == 'image':
-                extensions = ['.jpg', '.jpeg', '.png']
-            elif file_ext.lower() == 'document':
-                extensions = ['.pdf', '.docx', '.xlsx']
-            elif file_ext.lower() == 'audio':
-                extensions = ['.mp3', '.wav', '.flac']
-            elif file_ext.lower() == 'video':
-                extensions = ['.mp4', '.mov','.webm']
-            print(extensions)
-            if extensions:
-                ext_query = Q()
-                for ext in extensions:
-                    ext_query |= Q(lower_file_name__endswith=ext)
-                
-                file_extra_filter &= ext_query
-                filters_applied = True
-        print('file_extra_filter:',file_extra_filter)
-        print('filters_applied:',filters_applied)
-        file_queryset = FileDetails.objects.annotate(lower_file_name=Lower('fileName')).filter(
-            file_filter & file_extra_filter & hashtag_filter).annotate(
-            is_favourited=Exists(favourite_subquery),
-            is_request_raised = Exists(request_raised_subquery),
-            is_access_request_approved=Exists(access_request_subquery)
+            access_filter = (
+                Q(is_approved=True)
+                | Q(uploaded_by=user)
+                | Exists(approved_request)
             )
-        
-        if filters_applied:
-            case_details_qs = CaseInfoDetails.objects.filter(query,files__in=file_queryset).distinct()
-        else:
-            case_details_qs = CaseInfoDetails.objects.filter(files__in=file_queryset).distinct()
-        
-        caseDetails = case_details_qs.prefetch_related(
-            Prefetch('files', queryset=file_queryset)
-        ).order_by('-lastmodified_Date')[:20]
 
-        caseSerializer = CaseInfoSearchSerializers(caseDetails, many = True)
-        return Response({"responseData":{"response":caseSerializer.data,"status":status.HTTP_200_OK}})
+        # ---------------------------
+        # FILE-LEVEL FILTERS
+        # ---------------------------
+
+        if searchParams.get("subject"):
+            file_query &= Q(subject__icontains=searchParams["subject"])
+            filters_applied = True
+
+        if searchParams.get("classification"):
+            file_query &= Q(
+                classification__lookupId=searchParams["classification"]
+            )
+            filters_applied = True
+
+        if searchParams.get("fileType"):
+            file_query &= Q(fileType__lookupId=searchParams["fileType"])
+            filters_applied = True
+
+        if searchParams.get("docType"):
+            file_query &= Q(documentType__lookupId=searchParams["docType"])
+            filters_applied = True
+
+        # Hashtag (regex removed)
+        if searchParams.get("hashTag"):
+            file_query &= Q(hashTag__icontains=searchParams["hashTag"])
+            filters_applied = True
+
+        # File extension
+        if searchParams.get("fileExt"):
+            ext_map = {
+                "image": [".jpg", ".jpeg", ".png"],
+                "document": [".pdf", ".docx", ".xlsx"],
+                "audio": [".mp3", ".wav"],
+                "video": [".mp4", ".mov", ".webm"],
+            }
+            ext_query = Q()
+            for ext in ext_map.get(searchParams["fileExt"].lower(), []):
+                ext_query |= Q(fileName__iendswith=ext)
+
+            file_query &= ext_query
+            filters_applied = True
+
+        # ---------------------------
+        # FILE QUERYSET
+        # ---------------------------
+
+        file_qs = (
+            FileDetails.objects
+            .filter(access_filter & file_query)
+            .annotate(
+                is_favourited=Exists(favourite_subquery),
+                is_request_raised=Exists(request_raised),
+                is_access_request_approved=Exists(approved_request)
+            )
+        )
+
+        # ---------------------------
+        # CASE QUERYSET
+        # ---------------------------
+
+        if filters_applied:
+            case_qs = CaseInfoDetails.objects.filter(
+                case_query,
+                files__in=file_qs
+            ).distinct()
+        else:
+            case_qs = CaseInfoDetails.objects.filter(
+                files__in=file_qs
+            ).distinct()
+
+        case_qs = (
+            case_qs
+            .prefetch_related(
+                Prefetch("files", queryset=file_qs)
+            )
+            .order_by("-lastmodified_Date")[:20]
+        )
+
+        serializer = CaseInfoSearchSerializers(case_qs, many=True)
+
+        return Response({
+            "responseData": {
+                "response": serializer.data,
+                "status": status.HTTP_200_OK
+            }
+        })
 
 class FileDetailsView(APIView):
     permission_classes = [IsAuthenticated, HasRequiredPermission]
@@ -708,7 +906,7 @@ class CaseFileUploadView(APIView):
         try:
             caseData = get_object_or_404(CaseInfoDetails, pk=casedetailsId)
             file_details_json = request.data.get("fileDetails")
-
+            print('file_details_json',file_details_json)
             if isinstance(file_details_json, str):
                 file_details_data = json.loads(file_details_json)
 
@@ -720,15 +918,35 @@ class CaseFileUploadView(APIView):
                 return Response({"error": "Mismatch between file details and files"}, status=400)
 
             file_responses = []
-            for i, file in enumerate(files):
+            for file,detail in zip(files,file_details_data):
                 content = file.read()
                 file_hash = hashlib.sha256(content).hexdigest()
+                print('detail',detail)
+                file_id=detail["fileId"]
 
-                if FileDetails.objects.filter(fileHash=file_hash, caseDetails=caseData).exists():
+                print('fileId',file_id)
+
+                if FileDetails.objects.filter(caseDetails=caseData,fileId=file_id).exists():
                     continue  # skip duplicate
+                
+                # division_name = Division.objects.get(divisionId=caseData.division).divisionName
+                print("DistrictId:",caseData.division.departmentId)
+                # dept_name = Department.objects.get(departmentId=caseData.division.departmentId).departmentName
 
                 file_name = file.name
-                file_path = os.path.join(UPLOAD_DIR, file_name)
+                # file_path = os.path.join(UPLOAD_DIR, file_name)
+                file_path = os.path.join(
+                           UPLOAD_DIR,
+                        str(caseData.division.departmentId),
+                        str(caseData.division),
+                        str(caseData.year),
+                        str(UnitMaster.objects.get(unitId= caseData.unitId).unitName),
+                        str(caseData.caseNo),
+                        str(GeneralLookUp.objects.get(lookupId=caseData.caseType).lookupName),
+                        str(GeneralLookUp.objects.get(lookupId= detail["fileType"]).lookupName),
+                        str(GeneralLookUp.objects.get(lookupId=detail["documentType"]).lookupName),
+                        file_name
+                        )
                 os.makedirs(os.path.dirname(file_path), exist_ok=True)
                 with open(file_path, "wb") as f:
                     f.write(content)
@@ -739,11 +957,11 @@ class CaseFileUploadView(APIView):
                     filePath=file_path,
                     fileHash=file_hash,
                     is_approved=True,
-                    hashTag=file_details_data[i]["hashTag"],
-                    subject=file_details_data[i]["subject"],
-                    fileType=GeneralLookUp.objects.get(lookupId=file_details_data[i]["fileType"]),
-                    classification=GeneralLookUp.objects.get(lookupId=file_details_data[i]["classification"]),
-                    documentType=GeneralLookUp.objects.get(lookupId=file_details_data[i]["documentType"]),
+                    hashTag=detail["hashTag"],
+                    subject=detail["subject"],
+                    fileType=GeneralLookUp.objects.get(lookupId=detail["fileType"]),
+                    classification=GeneralLookUp.objects.get(lookupId=detail["classification"]),
+                    documentType=GeneralLookUp.objects.get(lookupId=detail["documentType"]),
                     uploaded_by=request.user,
                     division=caseData.division,
                     caseType= caseData.caseType
@@ -759,6 +977,7 @@ class CaseFileUploadView(APIView):
 
         except Exception as e:
             return Response({"error": str(e)}, status=500)
+
 def convert_docx_to_pdf(docx_path):
     output_dir = os.path.dirname(docx_path)
     convert(docx_path, output_dir)

@@ -25,7 +25,7 @@ class Role(models.Model):
 class Department(models.Model):
     departmentId = models.AutoField(primary_key = True)
     departmentName = models.CharField(unique=True,max_length=150)
-    active = models.CharField(default='Y')
+    active = models.CharField(max_length=1,default='Y')
     lastModifiedDate = models.DateField(auto_now=True)
 
     def __str__(self):
@@ -36,7 +36,7 @@ class Division(models.Model):
     divisionId = models.AutoField(primary_key = True)
     departmentId=models.ForeignKey(Department,on_delete= models.CASCADE)
     divisionName = models.CharField(unique = True, max_length = 250)
-    active = models.CharField(default = 'Y')
+    active = models.CharField(max_length=1,default = 'Y')
     lastModifiedDate = models.DateTimeField(auto_now = True)
 
     def __str__(self):
@@ -56,7 +56,7 @@ class Division(models.Model):
 class StateMaster(models.Model):
     stateId = models.AutoField(primary_key = True)
     stateName = models.CharField(unique = True, max_length = 100)
-    active =models.CharField(default = 'Y')
+    active =models.CharField(max_length=1,default = 'Y')
     lastModifiedDate = models.DateTimeField(auto_now = True)
 
     def __str__(self):
@@ -67,8 +67,8 @@ class DistrictMaster(models.Model):
     districtId = models.AutoField(primary_key = True)
     districtName = models.CharField( max_length = 100)
     localName = models.CharField(max_length = 200)
-    stateId = models.ForeignKey(StateMaster,on_delete=models.SET_NULL, null=True, blank=True,default=None)
-    active = models.CharField(default = 'Y')
+    stateId = models.ForeignKey(StateMaster,on_delete=models.SET_NULL, null=True, blank=True)
+    active = models.CharField(max_length=1,default = 'Y')
     lastModifiedDate = models.DateTimeField(auto_now = True)
 
     def __str__(self):
@@ -77,7 +77,7 @@ class DistrictMaster(models.Model):
 class Designation(models.Model):
     designationId = models.AutoField(primary_key = True)
     designationName = models.CharField( max_length = 100,unique=True)
-    active = models.CharField(default = 'Y')
+    active = models.CharField(max_length=1,default = 'Y')
     lastModifiedDate = models.DateTimeField(auto_now = True)
     division = models.ManyToManyField(Division,null=True,blank=True)
     department = models.ManyToManyField(Department, null= True, blank= True)
@@ -99,7 +99,7 @@ class DesignationHierarchy(models.Model):
 class DesignationMaster(models.Model):
     designationId = models.AutoField(primary_key = True)
     designationName = models.CharField( max_length = 100)
-    active = models.CharField(default = 'Y')
+    active = models.CharField(max_length=1,default = 'Y')
     lastModifiedDate = models.DateTimeField(auto_now = True)
 
     def __str__(self):
@@ -118,7 +118,7 @@ class UnitMaster(models.Model):
     talukID = models.IntegerField()
     address1 = models.CharField(max_length = 250,blank = True, null = True)
     address2 = models.CharField(max_length = 250,blank = True, null =True)
-    active = models.CharField(default = 'Y')
+    active = models.CharField(max_length=1,default = 'Y')
     lastModifiedDate = models.DateTimeField(auto_now = True)
 
     def __str__(self):
@@ -128,7 +128,7 @@ class UnitMaster(models.Model):
 class FileClassification(models.Model):
     fileClassificationId = models.AutoField(primary_key = True)
     fileClassificationName = models.CharField( max_length = 100)
-    active = models.CharField(default = 'Y')
+    active = models.CharField(max_length=1,default = 'Y')
     lastModifiedDate = models.DateTimeField(auto_now = True)
 
     def __str__(self):
@@ -138,7 +138,7 @@ class FileClassification(models.Model):
 class FileType(models.Model):
     fileTypeId = models.AutoField(primary_key = True)
     fileTypeName = models.CharField( max_length = 100)
-    active = models.CharField(default = 'Y')
+    active = models.CharField(max_length=1,default = 'Y')
     lastModifiedDate = models.DateTimeField(auto_now = True)
 
     def __str__(self):
@@ -148,7 +148,7 @@ class FileType(models.Model):
 class CaseStatus(models.Model):
     statusId = models.AutoField(primary_key = True)
     statusName = models.CharField( max_length = 100)
-    active = models.CharField(default = 'Y')
+    active = models.CharField(max_length=1,default = 'Y')
     lastModifiedDate = models.DateTimeField(auto_now = True)
 
     def __str__(self):
@@ -160,7 +160,7 @@ class GeneralLookUp(models.Model):
     lookupName = models.CharField( max_length= 100)
     CategoryId = models.IntegerField()
     lookupOrder = models.IntegerField(null = True, blank=True)
-    active = models.CharField(default ='Y')
+    active = models.CharField(max_length=1,default ='Y')
     lastmodifiedDate = models.DateTimeField(auto_now= True)
 
 class SMTPSettings(models.Model):
