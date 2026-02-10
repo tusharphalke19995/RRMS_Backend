@@ -23,6 +23,12 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
+
+MEDIA_ROOT = os.getenv("MEDIA_ROOT", "/app/media")
+MEDIA_URL = "/media/"
+
+UPLOAD_SUBDIR = os.getenv("UPLOAD_SUBDIR", "uploads/CID")
+
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
 
@@ -32,7 +38,7 @@ SECRET_KEY = 'django-insecure-_29_+m4pu4x66=2l8milapzgrt2159te599c)ywhj#i*ca@(j2
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTSsettings = ALLOWED_HOSTS = [os.getenv("RENDER_EXTERNAL_HOSTNAME", "localhost")]
+ALLOWED_HOSTSsettings = ALLOWED_HOSTS = ['localhost','192.168.1.240','172.21.12.19','127.0.0.1','*']
 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'uploads')
@@ -121,18 +127,35 @@ WSGI_APPLICATION = 'RRMSAPI.wsgi.application'
 
         # },
         
+# DATABASES = {
+       
+#     'default': {
+#         'ENGINE': 'mssql',
+#         'NAME': os.getenv("DB_NAME"),
+#         'HOST': os.getenv("DB_HOST"),
+#         'PORT': os.getenv("DB_PORT", "1433"),
+#         'OPTIONS': {
+#             'driver': 'ODBC Driver 18 for SQL Server',
+#             'trusted_connection': 'yes',
+#             'extra_params': 'Encrypt=yes;TrustServerCertificate=yes;'
+
+#         },
+#     }
+# }
+
 DATABASES = {
-          'default': {
+         'default': {
         'ENGINE': 'mssql',
-        'NAME': 'RRMSDb',
-        'HOST': 'BUDHA\\MSSQLSERVER03',
+        'NAME': config("DB_NAME"),
+        'HOST': config("DB_HOST"),
+        'USER': config("DB_USER"),
+        'PASSWORD': config("DB_PASSWORD"),
         'OPTIONS': {
             'driver': 'ODBC Driver 17 for SQL Server',
             'trusted_connection': 'yes',
             'extra_params': 'Encrypt=yes;TrustServerCertificate=yes;'
-
         },
-          }
+    }
 }
 
 
@@ -182,7 +205,9 @@ CORS_ALLOW_ALL_ORIGINS = True
 
 CORS_ALLOWED_ORIGINS = [
     'http://localhost:4200',
-    'https://rrms-frontend.vercel.app'
+    'https://rrms-frontend.vercel.app',
+    'http://172.21.12.19',
+    'https://172.21.12.19'
 ]
 
 CORS_ALLOW_HEADERS = [

@@ -1,33 +1,35 @@
-FROM python:3.13.5
+# Use slim Python image for smaller size
+FROM python:3.13-slim
 
 # Set environment variables
-ENV PYTHONDONTWRITEBYTECODE=1 \
-    PYTHONUNBUFFERED=1
+ENV PYTHONDONTWRITEBYTECODE=1
+ENV PYTHONUNBUFFERED=1
 
 WORKDIR /app
 
-# Install system dependencies
-RUN apt-get update \
-    && apt-get install -y build-essential libpq-dev curl netcat-openbsd gcc
+# Install dependencies
+RUN apt-get update && apt-get install -y \
+    gcc curl gnupg unixodbc unixodbc-dev libssl-dev \
+    && rm -rf /var/lib/apt/lists/*
 
-# Install Python dependencies
-COPY requirements.txt ./
-RUN pip install --upgrade pip \
-    && pip install -r requirements.txt
+# Install Microsoft ODBC Driver
+RUN curl https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor > /usr/share/keyrings/microsoft.gpg \
+ && echo "deb [signed-by=/usr/share/keyrings/microsoft.gpg] https://packages.microsoft.com/debian/12/prod bookworm main" \
+    > /etc/apt/sources.list.d/mssql-release.list \
+ && apt-get update \
+ && ACCEPT_EULA=Y apt-get install -y msodbcsql17 \
+ && rm -rf /var/lib/apt/lists/*
 
-# Copy the project files
+# Copy requirements and install
+COPY requirements.txt .
+RUN pip install --upgrade pip && pip install -r requirements.txt
+
+# Copy application code
 COPY . .
 
-# Copy .env file (optional, for build-time context)
-# Uncomment if you want to use .env during build
-# COPY .env ./
+COPY entrypoint.sh /entrypoint.sh
+RUN chmod +x /entrypoint.sh
 
-# Collect static files (make sure required ENV vars like DB_NAME are set if needed)
-# These values must be defined in your .env or passed with `--build-arg` or `ENV`
-RUN python manage.py collectstatic --noinput || echo "Collect static failed, skipping..."
+EXPOSE 8001
 
-# Expose port
-EXPOSE 8000
-
-# Run the server
-CMD ["gunicorn", "RRMSAPI.wsgi:application", "--bind", "0.0.0.0:8000"]
+ENTRYPOINT ["/entrypoint.sh"]

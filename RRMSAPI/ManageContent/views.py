@@ -55,7 +55,7 @@ class FolderTreeAPIView(APIView):
                                 Q(division_id__in=user_division_ids) | Q(division__departmentId__in=user_department_ids),
                                 isArchieved=False
                             )
-
+        print('files:',files)
         if division_id:
             files = files.filter(division_id=division_id)
         if year:
@@ -771,6 +771,7 @@ class FolderTreeFullAPIView(APIView):
                 "file_id": f.fileId,
                 "name": f.fileName,
                 "fileHash":f.fileHash,
+                "caseId":case.CaseInfoDetailsId,
                 "path": request.build_absolute_uri(f.filePath) if f.filePath else None,
                 "created_at": f.created_at,
                 "uploaded_by": f"{f.uploaded_by.first_name} {f.uploaded_by.last_name}" if f.uploaded_by else None

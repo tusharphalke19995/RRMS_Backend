@@ -7,7 +7,7 @@ from .serializers import CaseInfoDetailsSerializer, CaseTransferSerializer,FileD
 from .models import CaseTransfer, FileDetails, CaseInfoDetails, FavouriteFiles, Notification, FileAccessRequest, FileUploadApproval
 from django.shortcuts import get_object_or_404
 from django.db.models import Prefetch, OuterRef, Exists, Case, When, Value, BooleanField
-from .utils import record_file_access, timezone
+from .utils import get_upload_dir, record_file_access, timezone
 from django.conf import settings
 from datetime import datetime
 from django.db.models.functions import Coalesce
@@ -34,8 +34,8 @@ from docx2pdf import convert
 import re
 import base64
 
-UPLOAD_DIR = os.path.join(settings.MEDIA_ROOT, "uploads","CID")
-os.makedirs(UPLOAD_DIR, exist_ok=True)
+# UPLOAD_DIR = os.path.join(settings.MEDIA_ROOT, "uploads","CID")
+# os.makedirs(UPLOAD_DIR, exist_ok=True)
 
 User = get_user_model()
 
@@ -533,7 +533,7 @@ class SubmitDraftAPIView(APIView):
                     if file_hash not in existing_hashes:
                         file_name = uploaded_files[i].name
                         file_path = os.path.join(
-                           UPLOAD_DIR,
+                           get_upload_dir(),
                         str(dept_name),
                         str(division_name),
                         str(case_instance.year),
@@ -600,7 +600,7 @@ class SubmitDraftAPIView(APIView):
 
                     file_name = uploaded_files[i].name
                     file_path = os.path.join(
-                         UPLOAD_DIR,
+                         get_upload_dir(),
                         str(dept_name),
                         str(division_name),
                         str(case_instance.year),
@@ -739,7 +739,7 @@ class CaseInfoDetailsView(APIView):
                     # Define file path and save file
                     file_name = uploaded_files[i].name
                     file_path = os.path.join(
-                        UPLOAD_DIR,
+                        get_upload_dir(),
                         str(dept_name.departmentName),
                         str(div_name.divisionName),
                         str(case_info.year),
@@ -850,7 +850,7 @@ class CaseInfoDetailsView(APIView):
                     file_content = uploaded_file.read()
                     file_hash = hashlib.sha256(file_content).hexdigest()
                     file_name = uploaded_file.name
-                    file_path = os.path.join(UPLOAD_DIR,
+                    file_path = os.path.join(get_upload_dir(),
                         str(dept_name.departmentName),
                         str(div_name.divisionName),
                         str(caseInfo.year),
@@ -936,7 +936,7 @@ class CaseFileUploadView(APIView):
                 file_name = file.name
                 # file_path = os.path.join(UPLOAD_DIR, file_name)
                 file_path = os.path.join(
-                           UPLOAD_DIR,
+                           get_upload_dir(),
                         str(caseData.division.departmentId),
                         str(caseData.division),
                         str(caseData.year),
@@ -1620,7 +1620,7 @@ class SaveCaseTransferView(APIView):
                 document_type = GeneralLookUp.objects.get(lookupId=file.documentType_id).lookupName if file.documentType_id else "NA"
 
                 new_path = os.path.join(
-                    UPLOAD_DIR,
+                    get_upload_dir(),
                     str(dept_name),
                     str(division_name),
                     str(case_details_Id.year),
