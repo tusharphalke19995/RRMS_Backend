@@ -1,0 +1,14 @@
+version: "3.9"
+
+services:
+  web:
+    container_name: rrms_api1
+    image: rrmsapi-web:latest
+    env_file:
+      - .env
+    ports:
+      - "8001:8001"
+    volumes:
+       - F:/uploads:/app/media
+    restart: always
+

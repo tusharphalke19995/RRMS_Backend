@@ -23,25 +23,22 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
+# Read from .env (Docker)
+MEDIA_ROOT = config("MEDIA_ROOT")
+MEDIA_URL = config("MEDIA_URL")
 
-MEDIA_ROOT = os.getenv("MEDIA_ROOT", "/app/media")
-MEDIA_URL = "/media/"
+PHYSICAL_MEDIA_ROOT = config("PHYSICAL_MEDIA_ROOT")
 
-UPLOAD_SUBDIR = os.getenv("UPLOAD_SUBDIR", "uploads/CID")
+# Security
+SECRET_KEY = 'django-insecure-29+m4pu4x66=2l8milapzgrt2159te599c)ywhj#i*ca@(j2'
+DEBUG = True
 
-# Quick-start development settings - unsuitable for production
-# See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
-
-# SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-_29_+m4pu4x66=2l8milapzgrt2159te599c)ywhj#i*ca@(j2'
+ALLOWED_HOSTS = ['localhost','192.168.1.240','172.21.12.19','127.0.0.1','*']
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
 ALLOWED_HOSTSsettings = ALLOWED_HOSTS = ['localhost','192.168.1.240','172.21.12.19','127.0.0.1','*']
-
-MEDIA_URL = '/media/'
-MEDIA_ROOT = os.path.join(BASE_DIR, 'uploads')
 
 # Application definition
 
@@ -61,9 +58,6 @@ INSTALLED_APPS = [
     'caseInfoFiles.apps.CaseinfofilesConfig',
     'ManageContent.apps.ManagecontentConfig'
 ]
-
-# MEDIA_URL = '/uploads/'
-# MEDIA_ROOT = os.path.join(BASE_DIR, 'uploads')
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -101,47 +95,6 @@ TEMPLATES = [
 WSGI_APPLICATION = 'RRMSAPI.wsgi.application'
 
 
-
-# Database
-# https://docs.djangoproject.com/en/5.1/ref/settings/#databases
-
-# 'default': {
-    #    'ENGINE': 'django.db.backends.postgresql',
-    #     'NAME': config('DB_NAME'),
-    #     'USER': config('DB_USER'),
-    #     'PASSWORD': config('DB_PASSWORD'),
-    #     'HOST': config('DB_HOST'),
-    #     'PORT': config('DB_PORT'),
-    # }
-      # 'USER': 'your_user',
-        # 'PASSWORD': 'your_password',
-        # 'PORT': '1433',
-        # 'default': {
-        # 'ENGINE': 'mssql',
-        # 'NAME': 'RRMS',
-        # 'HOST': 'BUDHA\\MSSQLSERVER03',
-        # 'OPTIONS': {
-        #     'driver': 'ODBC Driver 17 for SQL Server',
-        #     'trusted_connection': 'yes',
-        #     'extra_params': 'Encrypt=yes;TrustServerCertificate=yes;'
-
-        # },
-        
-# DATABASES = {
-       
-#     'default': {
-#         'ENGINE': 'mssql',
-#         'NAME': os.getenv("DB_NAME"),
-#         'HOST': os.getenv("DB_HOST"),
-#         'PORT': os.getenv("DB_PORT", "1433"),
-#         'OPTIONS': {
-#             'driver': 'ODBC Driver 18 for SQL Server',
-#             'trusted_connection': 'yes',
-#             'extra_params': 'Encrypt=yes;TrustServerCertificate=yes;'
-
-#         },
-#     }
-# }
 
 DATABASES = {
          'default': {

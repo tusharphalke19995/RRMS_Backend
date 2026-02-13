@@ -2,9 +2,22 @@ version: "3.9"
 
 services:
   web:
-    build: .
-    container_name: rrms_api
-    env_file: .env
+    container_name: rrms_api1
+    image: rrmsapi-web:latest
+    env_file:
+      - .env
     ports:
       - "8001:8001"
+    volumes:
+      - M:/app/media
+      # - F:/uploads:/app/media
+      # - rrms_volume:/app/media
     restart: always
+
+# volumes:
+#   rrms_volume:
+#     driver: local
+#     driver_opts:
+#       type: cifs
+#       device: "//172.21.12.20/rrms"
+#       o: "guest"
