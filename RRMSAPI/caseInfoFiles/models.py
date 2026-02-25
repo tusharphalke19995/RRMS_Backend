@@ -56,6 +56,15 @@ class FileDetails(models.Model):
     comments = models.CharField(max_length=100,null=True,blank=True)
     isArchieved=models.BooleanField(default=False)
     caseType = models.CharField(max_length = 100,null=True,default=True)
+
+    class Meta:
+        indexes = [
+            models.Index(fields=["division"]),
+            models.Index(fields=["isArchieved"]),
+            models.Index(fields=["fileType"]),
+            models.Index(fields=["documentType"]),
+            models.Index(fields=["uploaded_by"]),
+        ]
     def __str__(self):
         return self.fileName
     

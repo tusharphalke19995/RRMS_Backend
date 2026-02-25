@@ -49,7 +49,7 @@ class FolderTreeAPIView(APIView):
             return Response({"detail": "Unauthorized for this division"}, status=403)
         
         # Load relevant files based on user role
-        files = FileDetails.objects.select_related("division","caseDetails","fileType","documentType","division__departmentId"
+        files = FileDetails.objects.select_related("division","caseDetails","fileType","documentType","division__departmentId","uploaded_by",
                                                    ).filter(
                                 Q(division_id=division_id),
                                 Q(division_id__in=user_division_ids) | Q(division__departmentId__in=user_department_ids),
@@ -513,6 +513,27 @@ class ArchiveFullTreeAPIView(APIView):
             return Response([], status=status.HTTP_200_OK)
         tree = nested_dict()
 
+        # Build lookup caches once to avoid per-row DB hits in the loop.
+        unit_ids = set(
+            files.exclude(caseDetails__unitId__isnull=True)
+            .values_list("caseDetails__unitId", flat=True)
+            .distinct()
+        )
+        case_type_ids = set(
+            files.exclude(caseType__isnull=True).values_list("caseType", flat=True).distinct()
+        )
+
+        unit_cache = {
+            row["unitId"]: row["unitName"]
+            for row in UnitMaster.objects.filter(unitId__in=unit_ids).values("unitId", "unitName")
+        }
+        case_type_cache = {
+            row["lookupId"]: row["lookupName"]
+            for row in GeneralLookUp.objects.filter(lookupId__in=case_type_ids).values(
+                "lookupId", "lookupName"
+            )
+        }
+
         for f in files:
             dept = f.division.departmentId
             div = f.division
@@ -520,7 +541,7 @@ class ArchiveFullTreeAPIView(APIView):
             year    = case.year
             unitId = case.unitId
             case_no = case.caseNo
-            case_type = GeneralLookUp.objects.get(lookupId= f.caseType)
+            case_type_name = case_type_cache.get(f.caseType)
             file_type = f.fileType
             doc_type = f.documentType
 
@@ -534,15 +555,20 @@ class ArchiveFullTreeAPIView(APIView):
             node["_meta"] = {"name": str(year), "level": "year","type": "folder"}
 
             node = node[unitId]
-            node["_meta"] = {"id":str(unitId),"name": UnitMaster.objects.get(unitId=unitId).unitName, "level": "unitId","type": "folder"}
+            node["_meta"] = {
+                "id": str(unitId),
+                "name": unit_cache.get(unitId, str(unitId)),
+                "level": "unitId",
+                "type": "folder",
+            }
 
             node = node[case_no]
             node["_meta"] = {"name": case_no, "level": "caseNo", "type": "folder"}
 
-            node = node[case_type.lookupId if case_type else None]
+            node = node[f.caseType if f.caseType else None]
             node["_meta"] = {
-                "id": case_type.lookupId if case_type else None,
-                "name": case_type.lookupName if case_type else None,
+                "id": f.caseType if f.caseType else None,
+                "name": case_type_name if case_type_name else None,
                 "level": "caseType",
                 "type": "folder"
             }
@@ -649,53 +675,46 @@ class FolderTreeFullAPIView(APIView):
 
     def _nested_dict(self):
         return defaultdict(self._nested_dict)
-    
-    def _lookup_name(self, lookup_id, cache):
-        if not lookup_id:
-            return None
-        if lookup_id in cache:
-            return cache[lookup_id]
-        name = (
-            GeneralLookUp.objects.filter(lookupId=lookup_id)
-            .values_list("lookupName", flat=True)
-            .first()
-        )
-        cache[lookup_id] = name
-        return name
 
     def post(self, request):
-        user          = request.user
-        division_id   = request.data.get("division_id")
-        year          = request.data.get("year")
-        unit_id       = request.data.get("unitId")
-        case_no    = request.data.get("caseNo")
-        case_type  = request.data.get("caseType")
-        file_type_id  = request.data.get("fileTypeId")
-        doc_type_id   = request.data.get("documentTypeId")
+        user = request.user
+        division_id = request.data.get("division_id")
+        year = request.data.get("year")
+        unit_id = request.data.get("unitId")
+        case_no = request.data.get("caseNo")
+        case_type = request.data.get("caseType")
+        file_type_id = request.data.get("fileTypeId")
+        doc_type_id = request.data.get("documentTypeId")
 
         user_designations = user.designation.all()
 
         user_division_ids = Division.objects.filter(
             designation__in=user_designations
-        ).values_list("divisionId", flat=True)
+        ).values_list("divisionId", flat=True).distinct()
 
         user_department_ids = Department.objects.filter(
             designation__in=user_designations
-        ).values_list("departmentId", flat=True)
+        ).values_list("departmentId", flat=True).distinct()
 
-        if division_id and int(division_id) not in user_division_ids:
+        user_division_ids_list = list(user_division_ids)
+        user_department_ids_list = list(user_department_ids)
+
+        if division_id and int(division_id) not in user_division_ids_list:
             return Response({"detail": "Unauthorized for this division"}, status=403)
-        
+
         files = FileDetails.objects.select_related(
             "division",
             "caseDetails",
             "fileType",
             "documentType",
             "division__departmentId",
+            "uploaded_by",
         ).filter(
-            Q(division_id__in=user_division_ids) | Q(division__departmentId__in=user_department_ids),
-            isArchieved=False,)
-        
+            Q(division_id__in=user_division_ids_list)
+            | Q(division__departmentId__in=user_department_ids_list),
+            isArchieved=False,
+        )
+
         if division_id:
             files = files.filter(division_id=division_id)
         if year:
@@ -710,15 +729,49 @@ class FolderTreeFullAPIView(APIView):
             files = files.filter(fileType_id=file_type_id)
         if doc_type_id:
             files = files.filter(documentType_id=doc_type_id)
-        
+
+        # Keep memory bounded: avoid materializing all file objects at once.
+        unit_ids = set(
+            files.exclude(caseDetails__unitId__isnull=True)
+            .values_list("caseDetails__unitId", flat=True)
+            .distinct()
+        )
+
+        lookup_ids = set()
+        lookup_ids.update(
+            files.exclude(caseType__isnull=True).values_list("caseType", flat=True).distinct()
+        )
+        lookup_ids.update(
+            files.exclude(fileType_id__isnull=True)
+            .values_list("fileType_id", flat=True)
+            .distinct()
+        )
+        lookup_ids.update(
+            files.exclude(documentType_id__isnull=True)
+            .values_list("documentType_id", flat=True)
+            .distinct()
+        )
+
+        lookup_cache = {
+            row["lookupId"]: row["lookupName"]
+            for row in GeneralLookUp.objects.filter(lookupId__in=lookup_ids).values(
+                "lookupId", "lookupName"
+            )
+        }
+        unit_cache = {
+            row["unitId"]: row["unitName"]
+            for row in UnitMaster.objects.filter(unitId__in=unit_ids).values(
+                "unitId", "unitName"
+            )
+        }
+
         tree = self._nested_dict()
-        lookup_cache = {}
 
-        for f in files:
-            division = f.division
-            case  = f.caseDetails
-
-            div_id   = f.division.divisionId
+        for f in files.iterator(chunk_size=1000):
+            case = f.caseDetails
+            if not case or not f.division:
+                continue
+            div_id = f.division.divisionId
             div_name = f.division.divisionName
 
             node = tree[div_id]
@@ -735,24 +788,25 @@ class FolderTreeFullAPIView(APIView):
                 levels.append(("year", case.year, str(case.year)))
 
             if case.unitId:
-                name = UnitMaster.objects.get(unitId = case.unitId)
-                levels.append(("unitId", str(case.unitId),name.unitName))
+                levels.append(
+                    ("unitId", str(case.unitId), unit_cache.get(case.unitId, str(case.unitId)))
+                )
 
             if case.caseNo:
                 levels.append(("caseNo", case.caseNo, str(case.caseNo)))
 
             if f.caseType:
-                name = self._lookup_name(f.caseType, lookup_cache)
+                name = lookup_cache.get(f.caseType)
                 if name:
                     levels.append(("caseType", f.caseType, name))
 
             if f.fileType_id:
-                name = self._lookup_name(f.fileType_id, lookup_cache)
+                name = lookup_cache.get(f.fileType_id)
                 if name:
                     levels.append(("fileType", f.fileType_id, name))
 
             if f.documentType_id:
-                name = self._lookup_name(f.documentType_id, lookup_cache)
+                name = lookup_cache.get(f.documentType_id)
                 if name:
                     levels.append(("documentType", f.documentType_id, name))
 
@@ -774,7 +828,8 @@ class FolderTreeFullAPIView(APIView):
                 "caseId":case.CaseInfoDetailsId,
                 "path": request.build_absolute_uri(f.filePath) if f.filePath else None,
                 "created_at": f.created_at,
-                "uploaded_by": f"{f.uploaded_by.first_name} {f.uploaded_by.last_name}" if f.uploaded_by else None
+                # "uploaded_by": f"{f.uploaded_by.first_name} {f.uploaded_by.last_name}" if f.uploaded_by else None
+                "uploaded_by": (f"{f.uploaded_by.first_name} {f.uploaded_by.last_name}" if f.uploaded_by_id and f.uploaded_by else None)
             })
 
         # ───── Convert tree ─────

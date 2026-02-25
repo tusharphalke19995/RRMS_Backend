@@ -1,3 +1,4 @@
+from pathlib import Path, PureWindowsPath
 from .models import FileUsage
 from django.utils import timezone
 import os
@@ -21,11 +22,15 @@ def get_physical_path(container_file_path):
     input path: /app/media/dept1/a.pdf
     Output Path: \\172.21.12.20\rrms\CID\dept1\a.pdf
     """
-    relative_path = os.path.relpath(container_file_path, settings.MEDIA_ROOT)
-    relative_path = relative_path.replace("/", "\\")  # Windows format
+    container_path = Path(container_file_path)
+    media_root = Path(settings.MEDIA_ROOT)
 
-    return os.path.join(settings.PHYSICAL_MEDIA_ROOT, relative_path)
+    relative_path = container_path.relative_to(media_root)
 
+    # always build WINDOWS path
+    physical_path = PureWindowsPath(settings.PHYSICAL_MEDIA_ROOT) / relative_path
+
+    return str(physical_path)
 
 def physical_to_container_path(physical_path):
     """
@@ -34,7 +39,9 @@ def physical_to_container_path(physical_path):
     →
     /app/media/dept1/a.pdf
     """
-    relative = physical_path.replace(settings.PHYSICAL_MEDIA_ROOT, "")
-    relative = relative.lstrip("\\").replace("\\", "/")
+    physical_root = PureWindowsPath(settings.PHYSICAL_MEDIA_ROOT)
+    full_path = PureWindowsPath(physical_path)
 
-    return os.path.join(settings.MEDIA_ROOT, relative)
+    relative = full_path.relative_to(physical_root)
+
+    return str(Path(settings.MEDIA_ROOT) / relative)

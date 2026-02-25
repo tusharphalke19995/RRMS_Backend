@@ -530,7 +530,7 @@ class SubmitDraftAPIView(APIView):
                     if file_hash not in existing_hashes:
                         file_name = uploaded_files[i].name
                         file_path = os.path.join(
-                           get_upload_dir(),
+                            get_upload_dir(),
                         str(dept_name),
                         str(division_name),
                         str(case_instance.year),
@@ -541,7 +541,7 @@ class SubmitDraftAPIView(APIView):
                         str(GeneralLookUp.objects.get(lookupId=file_details_data[i]['documentType']).lookupName),
                         file_name
                         )
-                        os.makedirs(os.path.dirname(file_path), exist_ok=True)
+                        os.makedirs(os.path.dirname( file_path), exist_ok=True)
                         with open(file_path, "wb") as f:
                             f.write(file_content)
 

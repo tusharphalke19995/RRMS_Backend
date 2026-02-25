@@ -195,17 +195,17 @@ class FileTypesViewSet(viewsets.ModelViewSet):
     serializer_class = FileTypeSerializer
 
     def get_queryset(self):
-        return GeneralLookUp.objects.filter(active = 'Y',CategoryId=2).order_by("lookupId")
+        return GeneralLookUp.objects.filter(active = 1,CategoryId=2).order_by("lookupId")
 
     def perform_create(self, serializer):
-        serializer.save(CategoryId=2, active='Y')
+        serializer.save(CategoryId=2, active=1)
 
     def perform_update(self, serializer):
         serializer.save()
 
     def destroy(self, request, *args, **kwargs):
         instance = self.get_object()
-        instance.active = 'N'
+        instance.active = 0
         instance.save()
         return Response(status=status.HTTP_204_NO_CONTENT)
     
@@ -213,17 +213,17 @@ class CaseFilesViewSet(viewsets.ModelViewSet):
     serializer_class = CaseFilesSerializer
 
     def get_queryset(self):
-        return GeneralLookUp.objects.filter(active = 'Y',CategoryId=3).order_by("lookupId")
+        return GeneralLookUp.objects.filter(active = 1,CategoryId=3).order_by("lookupId")
 
     def perform_create(self, serializer):
-        serializer.save(CategoryId=3, active='Y')
+        serializer.save(CategoryId=3, active=1)
 
     def perform_update(self, serializer):
         serializer.save()
 
     def destroy(self, request, *args, **kwargs):
         instance = self.get_object()
-        instance.active = 'N'
+        instance.active = 0
         instance.save()
         return Response(status=status.HTTP_204_NO_CONTENT)
     
@@ -231,17 +231,17 @@ class CorrespondenceFilesViewSet(viewsets.ModelViewSet):
     serializer_class = CorrFilesSerializer
 
     def get_queryset(self):
-        return GeneralLookUp.objects.filter(active = 'Y',CategoryId=4).order_by("lookupId")
+        return GeneralLookUp.objects.filter(active = 1,CategoryId=4).order_by("lookupId")
 
     def perform_create(self, serializer):
-        serializer.save(CategoryId=4, active='Y')
+        serializer.save(CategoryId=4, active=1)
 
     def perform_update(self, serializer):
         serializer.save()
 
     def destroy(self, request, *args, **kwargs):
         instance = self.get_object()
-        instance.active = 'N'
+        instance.active = 0
         instance.save()
         return Response(status=status.HTTP_204_NO_CONTENT)
 
@@ -249,17 +249,17 @@ class FileClassificationViewSet(viewsets.ModelViewSet):
     serializer_class = FileClassificationSerializer
 
     def get_queryset(self):
-        return GeneralLookUp.objects.filter(active = 'Y',CategoryId=7).order_by("lookupId")
+        return GeneralLookUp.objects.filter(active = 1,CategoryId=7).order_by("lookupId")
 
     def perform_create(self, serializer):
-        serializer.save(CategoryId=7, active='Y')
+        serializer.save(CategoryId=7, active=1)
 
     def perform_update(self, serializer):
         serializer.save()
 
     def destroy(self, request, *args, **kwargs):
         instance = self.get_object()
-        instance.active = 'N'
+        instance.active = 0
         instance.save()
         return Response(status=status.HTTP_204_NO_CONTENT)
 
@@ -267,17 +267,17 @@ class CaseStatusViewSet(viewsets.ModelViewSet):
     serializer_class = CaseStatusSerializer
 
     def get_queryset(self):
-        return GeneralLookUp.objects.filter(active = 'Y',CategoryId=6).order_by("lookupId")
+        return GeneralLookUp.objects.filter(active = 1,CategoryId=6).order_by("lookupId")
 
     def perform_create(self, serializer):
-        serializer.save(CategoryId=6, active='Y')
+        serializer.save(CategoryId=6, active=1)
 
     def perform_update(self, serializer):
         serializer.save()
 
     def destroy(self, request, *args, **kwargs):
         instance = self.get_object()
-        instance.active = 'N'
+        instance.active = 0
         instance.save()
         return Response(status=status.HTTP_204_NO_CONTENT)
     
@@ -286,7 +286,7 @@ class FinalReportCaseStatusViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):
         category_id = self.request.query_params.get('categoryId')
-        queryset = GeneralLookUp.objects.filter(active='Y')
+        queryset = GeneralLookUp.objects.filter(active=1)
         if category_id:
             queryset = queryset.filter(CategoryId=category_id)
         return queryset.order_by('lookupId')
@@ -295,7 +295,7 @@ class FinalReportCaseStatusViewSet(viewsets.ModelViewSet):
         category_id = self.request.data.get('categoryId')
         if not category_id:
             raise serializers.ValidationError({"categoryId": "This field is required."})
-        serializer.save(CategoryId=category_id, active='Y')
+        serializer.save(CategoryId=category_id, active=1)
 
     def perform_update(self, serializer):
         category_id = self.request.data.get('categoryId')
@@ -305,7 +305,7 @@ class FinalReportCaseStatusViewSet(viewsets.ModelViewSet):
 
     def destroy(self, request, *args, **kwargs):
         instance = self.get_object()
-        instance.active = 'N'
+        instance.active = 0
         instance.save()
         return Response(status=status.HTTP_204_NO_CONTENT)
     
